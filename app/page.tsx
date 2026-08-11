@@ -135,16 +135,20 @@ function StaggeredGrid({ onSelect }: { onSelect: (project: Project) => void }) {
     gsap.ticker.lagSmoothing(0);
 
     const context = gsap.context(() => {
-      gridImages.forEach((imageWrap) => {
+      gridImages.forEach((imageWrap, index) => {
         const imgEl = imageWrap.querySelector<HTMLElement>(".grid__item-img");
-        const rect = imageWrap.getBoundingClientRect();
-        const leftSide = rect.left + imageWrap.offsetWidth / 2 < window.innerWidth / 2;
+        // The grid always has two columns. Derive the animation direction from
+        // the stable DOM order instead of a transformed runtime rectangle.
+        // getBoundingClientRect() can cross the viewport midpoint during a
+        // ScrollTrigger refresh and make adjacent cards use the same side.
+        const leftSide = index % 2 === 0;
         gsap.timeline({
           scrollTrigger: {
             trigger: imageWrap,
             start: "top bottom+=10%",
             end: "bottom top-=25%",
             scrub: true,
+            invalidateOnRefresh: true,
           },
         })
           .from(imageWrap, {
