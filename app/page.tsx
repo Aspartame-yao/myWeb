@@ -210,7 +210,6 @@ function StaggeredGrid({ onSelect }: { onSelect: (project: Project) => void }) {
           <figure className={`grid__item grid__item--${item.kind}`} key={`${item.title}-${index}`}>
             <button className="grid__item-imgwrap" onClick={() => item.project ? onSelect(item.project) : document.getElementById("skills")?.scrollIntoView({ behavior: "smooth" })} aria-label={item.project ? `Open ${item.title} project details` : `Explore ${item.title} skill`}>
               <span className="grid__item-img" style={{ backgroundImage: `url(${item.image})` }} />
-              {item.kind === "skill" && <span className="grid-skill-label">{item.title}</span>}
               <span className="grid-card-hover"><strong>{item.title}</strong><small>{item.project ? "Click to explore ↗" : "View skill ↓"}</small></span>
             </button>
           </figure>
@@ -224,11 +223,11 @@ function StaggeredGrid({ onSelect }: { onSelect: (project: Project) => void }) {
 
 type ModuleKind = "projects" | "skills" | "about" | "contact";
 const socialLinks = [
-  { icon: siGithub.path, label: "GitHub", href: "https://github.com/Aspartame-yao", detail: "github.com/Aspartame-yao" },
-  { icon: siWechat.path, label: "WeChat", href: "#contact", qr: "/contact/wechat.jpg" },
-  { icon: siXiaohongshu.path, label: "Xiaohongshu", href: "#contact", qr: "/contact/xiaohongshu.jpg" },
-  { icon: siTiktok.path, label: "Douyin", href: "#contact", qr: "/contact/douyin.jpg" },
-  { icon: "M2.25 5.25A2.25 2.25 0 0 1 4.5 3h15a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 19.5 21h-15a2.25 2.25 0 0 1-2.25-2.25V5.25Zm2.02-.75L12 10.52 19.73 4.5H4.27Zm15.98 1.66-7.33 5.7a1.5 1.5 0 0 1-1.84 0l-7.33-5.7v12.59c0 .41.34.75.75.75h15a.75.75 0 0 0 .75-.75V6.16Z", label: "Email", href: "mailto:wangmengarc@163.com", detail: "wangmengarc@163.com" },
+  { icon: siGithub.path, label: "GitHub", href: "https://github.com/Aspartame-yao", detail: "github.com/Aspartame-yao", highContrast: false },
+  { icon: siWechat.path, label: "WeChat", href: "#contact", qr: "/contact/wechat.jpg", highContrast: false },
+  { icon: siXiaohongshu.path, label: "Xiaohongshu", href: "#contact", qr: "/contact/xiaohongshu.jpg", highContrast: true },
+  { icon: siTiktok.path, label: "Douyin", href: "#contact", qr: "/contact/douyin.jpg", highContrast: false },
+  { icon: "M2.25 5.25A2.25 2.25 0 0 1 4.5 3h15a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 19.5 21h-15a2.25 2.25 0 0 1-2.25-2.25V5.25Zm2.02-.75L12 10.52 19.73 4.5H4.27Zm15.98 1.66-7.33 5.7a1.5 1.5 0 0 1-1.84 0l-7.33-5.7v12.59c0 .41.34.75.75.75h15a.75.75 0 0 0 .75-.75V6.16Z", label: "Email", href: "mailto:wangmengarc@163.com", detail: "wangmengarc@163.com", highContrast: false },
 ];
 
 function ModuleCell({ kind, index }: { kind: ModuleKind; index: number }) {
@@ -300,7 +299,7 @@ function ShowcaseModule({ kind, title, id, onSelect }: { kind: ModuleKind; title
       {kind === "projects" && <div className="module-list">{projects.map((project, index) => <button className="module-list__item" key={project.title} onClick={() => onSelect(project)}><span>0{index + 1}</span><strong>{project.title}</strong><i>{project.type}</i><b>↗</b></button>)}</div>}
       {kind === "skills" && <div className="module-grid module-grid--skills">{Array.from({ length: 10 }, (_, index) => <figure className="module-grid__item" key={index}><ModuleCell kind={kind} index={index} /></figure>)}</div>}
       {kind === "about" && <div className="about-panel"><p>A small laboratory for turning ambiguous ideas into products people can see, touch and use.</p></div>}
-      {kind === "contact" && <div className="contact-links">{socialLinks.map((social) => <a className="contact-link" key={social.label} href={social.href} target={social.href.startsWith("http") ? "_blank" : undefined} rel={social.href.startsWith("http") ? "noreferrer" : undefined} aria-label={social.label}><span className="contact-link__icon"><svg viewBox="0 0 24 24" role="img" aria-hidden="true"><path d={social.icon} /></svg></span><span className={`contact-link__reveal${social.qr ? " is-qr" : ""}`}>{social.qr ? <img src={social.qr} alt={`${social.label} QR code`} /> : social.detail}</span></a>)}</div>}
+      {kind === "contact" && <div className="contact-links">{socialLinks.map((social) => <a className="contact-link" key={social.label} href={social.href} target={social.href.startsWith("http") ? "_blank" : undefined} rel={social.href.startsWith("http") ? "noreferrer" : undefined} aria-label={social.label}><span className="contact-link__icon"><svg viewBox="0 0 24 24" role="img" aria-hidden="true"><path d={social.icon} /></svg></span><span className={`contact-link__reveal${social.qr ? " is-qr" : ""}`}>{social.qr ? <img className={social.highContrast ? "qr-high-contrast" : undefined} src={social.qr} alt={`${social.label} QR code`} /> : social.detail}</span></a>)}</div>}
     </section>
   );
 }

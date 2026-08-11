@@ -69,6 +69,7 @@ button.module-cell{padding:0;cursor:pointer}
 .contact-link__reveal:after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#f1f3ef}
 .contact-link__reveal.is-qr{padding:.55rem}
 .contact-link__reveal img{display:block;width:clamp(120px,10vw,170px);height:auto;aspect-ratio:1;object-fit:cover;border-radius:2px}
+.contact-link__reveal img.qr-high-contrast{filter:grayscale(1) contrast(500%)}
 .contact-link:hover .contact-link__reveal,.contact-link:focus-visible .contact-link__reveal{opacity:1;visibility:visible;transform:translate(-50%,0) scale(1)}
 .showcase-module--contact{padding-bottom:8vh}
 .project-modal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.82);backdrop-filter:blur(18px);display:grid;place-items:center;padding:2rem;animation:modal-in .35s ease both}
