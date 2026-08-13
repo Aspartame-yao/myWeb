@@ -9,21 +9,114 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { siGithub, siTiktok, siWechat, siXiaohongshu } from "simple-icons";
 
-type Project = { title: string; type: string; summary: string; contribution: string; demoUrl: string | null };
+type Project = { title: string; type: string; summary: string; contribution: string; demoUrl: string | null; githubUrl: string | null };
+type Skill = { title: string; type: string; summary: string; contribution: string; image: string; githubUrl: string };
+type DetailItem = (Project & { image: string; linkLabel: string }) | (Skill & { linkLabel: string });
+type Language = "en" | "zh";
+
+const zhContent: Record<string, Partial<Pick<DetailItem, "title" | "type" | "summary" | "contribution">>> = {
+  "Tashan Stone": { title: "他山之石", type: "AI 产品 · 广告复刻", summary: "一款 AI 驱动的广告复刻工作室，帮助团队研究参考作品、拆解视觉语言，并将洞察转化为可执行的创意方向。", contribution: "产品概念 · AI 工作流 · 交互设计" },
+  "AI Ad Ecosystem": { title: "AI 广告生态", type: "平台 · 2025", summary: "探索创意生成、投放与反馈如何形成统一系统的智能广告工作流。", contribution: "产品架构 · AI 工作流 · 体验设计" },
+  "Unknown Orbit": { title: "未知轨道", type: "实验项目 · 即将推出", summary: "一个即将发布的交互产品实验占位项目。", contribution: "将在项目发布时补充详情" },
+  "Signal / 04": { title: "信号 / 04", type: "实验项目 · 即将推出", summary: "一个即将发布的视觉与交互研究占位项目。", contribution: "将在项目发布时补充详情" },
+  "Field Notes / 05": { title: "田野笔记 / 05", type: "研究 · 即将推出", summary: "一个未来研究驱动型产品故事的占位项目。", contribution: "将在项目发布时补充详情" },
+};
+
+const ui = {
+  en: { works: "Works", projects: "Projects", skills: "Skills", about: "About", contact: "Contact", explore: "Explore", demoPreview: "Demo preview · Image / video", contribution: "Contribution", demo: "Experience demo ↗", github: "View on GitHub ↗", demoSoon: "Demo coming soon", click: "Click to explore ↗", selected: "Selected experiments · 2024—2026", heading: <>Ideas become<br />visible here.</>, aboutText: "A small laboratory for turning ambiguous ideas into products people can see, touch and use." },
+  zh: { works: "作品", projects: "项目", skills: "技能", about: "关于", contact: "联系", explore: "探索", demoPreview: "演示预览 · 图片 / 视频", contribution: "我的贡献", demo: "体验 Demo ↗", github: "查看 GitHub ↗", demoSoon: "Demo 即将推出", click: "点击查看 ↗", selected: "精选实验 · 2024—2026", heading: <>让想法<br />变得可见。</>, aboutText: "一个将模糊想法转化为人们看得见、摸得着、用得上的产品实验室。" },
+} as const;
 
 const projects: readonly Project[] = [
-  { title: "VoxelLab", type: "AI Product · 2026", summary: "A spatial AI workspace that turns fragmented inspiration into visible, testable product directions.", contribution: "Product strategy, interaction design, rapid prototyping", demoUrl: null },
-  { title: "AI Ad Ecosystem", type: "Platform · 2025", summary: "An intelligent advertising workflow exploring how creative generation, delivery and feedback can form one system.", contribution: "Product architecture, AI workflow, experience design", demoUrl: null },
-  { title: "Unknown Orbit", type: "Experimental · Coming soon", summary: "A placeholder for an upcoming interactive product experiment.", contribution: "Details will be added with the project release", demoUrl: null },
-  { title: "Signal / 04", type: "Experimental · Coming soon", summary: "A placeholder for an upcoming visual and interaction study.", contribution: "Details will be added with the project release", demoUrl: null },
-  { title: "Field Notes / 05", type: "Research · Coming soon", summary: "A placeholder for a future research-led product story.", contribution: "Details will be added with the project release", demoUrl: null },
+  { title: "Tashan Stone", type: "AI Product · Advertising Recreation", summary: "An AI-powered advertising recreation studio that helps teams study reference work, break down its visual language and turn insights into actionable creative directions.", contribution: "Product concept · AI workflow · Interaction design", demoUrl: "https://tashan-stone-ad-recreation-studio.vercel.app/", githubUrl: "https://github.com/Aspartame-yao/recreate_ad.git" },
+  { title: "AI Ad Ecosystem", type: "Platform · 2025", summary: "An intelligent advertising workflow exploring how creative generation, delivery and feedback can form one system.", contribution: "Product architecture, AI workflow, experience design", demoUrl: null, githubUrl: null },
+  { title: "Unknown Orbit", type: "Experimental · Coming soon", summary: "A placeholder for an upcoming interactive product experiment.", contribution: "Details will be added with the project release", demoUrl: null, githubUrl: null },
+  { title: "Signal / 04", type: "Experimental · Coming soon", summary: "A placeholder for an upcoming visual and interaction study.", contribution: "Details will be added with the project release", demoUrl: null, githubUrl: null },
+  { title: "Field Notes / 05", type: "Research · Coming soon", summary: "A placeholder for a future research-led product story.", contribution: "Details will be added with the project release", demoUrl: null, githubUrl: null },
 ];
 
-const skillLabels = ["AI PRODUCT", "STRATEGY", "PROTOTYPE", "UX SYSTEM", "RESEARCH", "STORYTELLING", "3D / WEBGL", "AI WORKFLOW", "INTERACTION", "PRODUCT DESIGN"];
-const skills = skillLabels.map((title, index) => ({
-  title,
-  image: `/tube/im${(index % 5) + 1}.jpg`,
-}));
+const skills: readonly Skill[] = [
+  {
+    title: "analyze-ad-strategy",
+    type: "AI Skill · Advertising Strategy",
+    summary: "Analyzes advertising inputs, market context and creative signals to turn scattered evidence into a clear, actionable campaign strategy.",
+    contribution: "Strategic analysis · Audience insight · Creative direction",
+    image: "/skills/001.jpg",
+    githubUrl: "https://github.com/Aspartame-yao/analyze-ad-strategy",
+  },
+  {
+    title: "transcribe-video-speech",
+    type: "AI Skill · Speech Intelligence",
+    summary: "Extracts and structures spoken content from video, creating accurate transcripts that can support editing, search and downstream AI workflows.",
+    contribution: "Speech transcription · Content structuring · Video preprocessing",
+    image: "/skills/002.jpg",
+    githubUrl: "https://github.com/Aspartame-yao/transcribe-video-speech",
+  },
+  {
+    title: "create-shot-remake-skill",
+    type: "AI Skill · Shot Reconstruction",
+    summary: "Breaks a reference shot into reproducible visual decisions, then translates composition, movement and timing into a practical remake workflow.",
+    contribution: "Shot analysis · Visual decomposition · Reproduction planning",
+    image: "/skills/003.jpg",
+    githubUrl: "https://github.com/Aspartame-yao/create-shot-remake-skill",
+  },
+  {
+    title: "direct-ai-video",
+    type: "AI Skill · Creative Direction",
+    summary: "Directs AI-generated video from concept to shot-level execution while maintaining a coherent visual language, rhythm and narrative intention.",
+    contribution: "AI direction · Shot planning · Visual continuity",
+    image: "/skills/004.jpg",
+    githubUrl: "https://github.com/Aspartame-yao/direct-ai-video",
+  },
+  {
+    title: "edit-video-by-intent",
+    type: "AI Skill · Intent-Based Editing",
+    summary: "Turns a creative or communication goal into editing decisions, selecting and arranging footage according to meaning rather than timestamps alone.",
+    contribution: "Intent interpretation · Editorial structure · Sequence design",
+    image: "/skills/005.jpg",
+    githubUrl: "https://github.com/Aspartame-yao/edit-video-by-intent",
+  },
+  {
+    title: "assemble-aigc-video",
+    type: "AI Skill · AIGC Assembly",
+    summary: "Combines generated shots, audio and narrative components into a coherent video while managing continuity, pacing and delivery requirements.",
+    contribution: "Asset assembly · Narrative pacing · Delivery workflow",
+    image: "/skills/006.jpg",
+    githubUrl: "https://github.com/Aspartame-yao/assemble-aigc-video",
+  },
+  {
+    title: "design-game-trailer",
+    type: "AI Skill · Game Marketing",
+    summary: "Designs game trailers around player fantasy, core mechanics and dramatic escalation to communicate the experience with clarity and energy.",
+    contribution: "Trailer concept · Beat structure · Gameplay storytelling",
+    image: "/skills/007.jpg",
+    githubUrl: "https://github.com/Aspartame-yao/design-game-trailer",
+  },
+  {
+    title: "build-ecommerce-creative-pack",
+    type: "AI Skill · Ecommerce Creative",
+    summary: "Builds coordinated ecommerce creative packs across formats, adapting product value propositions into consistent, channel-ready visual assets.",
+    contribution: "Creative system · Format adaptation · Commerce messaging",
+    image: "/skills/008.jpg",
+    githubUrl: "https://github.com/Aspartame-yao/build-ecommerce-creative-pack",
+  },
+  {
+    title: "research-visual-trends",
+    type: "AI Skill · Visual Research",
+    summary: "Researches emerging visual patterns and cultural signals, separating short-lived aesthetics from trends with meaningful creative potential.",
+    contribution: "Trend scanning · Pattern synthesis · Visual opportunity mapping",
+    image: "/skills/009.jpg",
+    githubUrl: "https://github.com/Aspartame-yao/research-visual-trends",
+  },
+  {
+    title: "track-first-party-ai-news",
+    type: "AI Skill · Intelligence Tracking",
+    summary: "Tracks first-party AI announcements and product updates at the source, producing a focused signal stream with less speculation and noise.",
+    contribution: "Source monitoring · Update verification · Insight synthesis",
+    image: "/skills/010.jpg",
+    githubUrl: "https://github.com/Aspartame-yao/track-first-party-ai-news",
+  },
+];
 
 type WorkItem = {
   title: string;
@@ -116,7 +209,7 @@ function HeroScene() {
   );
 }
 
-function StaggeredGrid({ onSelect }: { onSelect: (project: Project) => void }) {
+function StaggeredGrid({ onSelect, language }: { onSelect: (item: DetailItem) => void; language: Language }) {
   const section = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -200,17 +293,17 @@ function StaggeredGrid({ onSelect }: { onSelect: (project: Project) => void }) {
   return (
     <section className="works" id="works" ref={section}>
       <div className="works-heading">
-        <p>Selected experiments · 2024—2026</p>
-        <h2>Ideas become<br />visible here.</h2>
+        <p>{ui[language].selected}</p>
+        <h2>{ui[language].heading}</h2>
       </div>
       <div className="grid">
         {Array.from({ length: workItems.length * 2 }, (_, index) => {
           const item = workItems[index % workItems.length];
           return (
           <figure className={`grid__item grid__item--${item.kind}`} key={`${item.title}-${index}`}>
-            <button className="grid__item-imgwrap" onClick={() => item.project ? onSelect(item.project) : document.getElementById("skills")?.scrollIntoView({ behavior: "smooth" })} aria-label={item.project ? `Open ${item.title} project details` : `Explore ${item.title} skill`}>
+            <button className="grid__item-imgwrap" onClick={() => onSelect(item.project ? { ...item.project, image: item.image, linkLabel: "Experience demo ↗" } : { ...skills.find((skill) => skill.title === item.title)!, linkLabel: "View on GitHub ↗" })} aria-label={`Open ${item.title} details`}>
               <span className="grid__item-img" style={{ backgroundImage: `url(${item.image})` }} />
-              <span className="grid-card-hover"><strong>{item.title}</strong><small>{item.project ? "Click to explore ↗" : "View skill ↓"}</small></span>
+              <span className="grid-card-hover"><strong>{language === "zh" && item.project ? (zhContent[item.title]?.title ?? item.title) : item.title}</strong><small>{ui[language].click}</small></span>
             </button>
           </figure>
           );
@@ -230,15 +323,15 @@ const socialLinks = [
   { icon: "M2.25 5.25A2.25 2.25 0 0 1 4.5 3h15a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 19.5 21h-15a2.25 2.25 0 0 1-2.25-2.25V5.25Zm2.02-.75L12 10.52 19.73 4.5H4.27Zm15.98 1.66-7.33 5.7a1.5 1.5 0 0 1-1.84 0l-7.33-5.7v12.59c0 .41.34.75.75.75h15a.75.75 0 0 0 .75-.75V6.16Z", label: "Email", href: "mailto:wangmengarc@163.com", detail: "wangmengarc@163.com", highContrast: false },
 ];
 
-function ModuleCell({ kind, index }: { kind: ModuleKind; index: number }) {
+function ModuleCell({ kind, index, onSelect, language }: { kind: ModuleKind; index: number; onSelect: (item: DetailItem) => void; language: Language }) {
   if (kind === "skills") {
     const skill = skills[index % skills.length];
-    return <div className="module-cell module-cell--skill" style={{ backgroundImage: `url(${skill.image})` }}><strong>{skill.title}</strong></div>;
+    return <button className="module-cell module-cell--skill" onClick={() => onSelect({ ...skill, linkLabel: ui[language].github })} aria-label={`Open ${skill.title} details`}><span className="module-cell__media" style={{ backgroundImage: `url(${skill.image})` }} /><span className="module-cell__hover"><strong>{skill.title}</strong><small>{ui[language].click}</small></span></button>;
   }
   return null;
 }
 
-function ShowcaseModule({ kind, title, id, onSelect }: { kind: ModuleKind; title: string; id: string; onSelect: (project: Project) => void }) {
+function ShowcaseModule({ kind, title, id, onSelect, language }: { kind: ModuleKind; title: string; id: string; onSelect: (item: DetailItem) => void; language: Language }) {
   const section = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -254,6 +347,7 @@ function ShowcaseModule({ kind, title, id, onSelect }: { kind: ModuleKind; title
     if (!titleElement) return;
 
     const context = gsap.context(() => {
+      gsap.set(characters, { clearProps: "all" });
       gsap.timeline({
         scrollTrigger: { trigger: titleElement, start: "top bottom", end: "center center-=25%", scrub: true },
       }).from(characters, {
@@ -279,13 +373,13 @@ function ShowcaseModule({ kind, title, id, onSelect }: { kind: ModuleKind; title
           });
         });
       }
-      if (listItems.length) gsap.from(listItems, { yPercent: 160, autoAlpha: 0, stagger: 0.12, ease: "sine", scrollTrigger: { trigger: ".module-list", start: "top bottom", end: "center center", scrub: true } });
+      if (listItems.length) gsap.from(listItems, { yPercent: 160, autoAlpha: 0, stagger: 0.12, ease: "sine", scrollTrigger: { trigger: listItems[0].parentElement, start: "top bottom", end: "center center", scrub: true } });
       if (aboutPanel) gsap.from(aboutPanel, { yPercent: 90, rotateX: 35, autoAlpha: 0, transformOrigin: "50% 0%", ease: "sine", scrollTrigger: { trigger: aboutPanel, start: "top bottom", end: "center center", scrub: true } });
     }, root);
 
     const refresh = requestAnimationFrame(() => ScrollTrigger.refresh(true));
     return () => { cancelAnimationFrame(refresh); context.revert(); };
-  }, []);
+  }, [language, title]);
 
   const split = (value: string, className: string) => Array.from(value).map((character, index) => (
     <span className={className} key={`${character}-${index}`}>{character === " " ? "\u00a0" : character}</span>
@@ -296,16 +390,19 @@ function ShowcaseModule({ kind, title, id, onSelect }: { kind: ModuleKind; title
       <div className="module-title">
         <h2 className="module-title__word" aria-label={title}>{split(title, "module-title__char")}</h2>
       </div>
-      {kind === "projects" && <div className="module-list">{projects.map((project, index) => <button className="module-list__item" key={project.title} onClick={() => onSelect(project)}><span>0{index + 1}</span><strong>{project.title}</strong><i>{project.type}</i><b>↗</b></button>)}</div>}
-      {kind === "skills" && <div className="module-grid module-grid--skills">{Array.from({ length: 10 }, (_, index) => <figure className="module-grid__item" key={index}><ModuleCell kind={kind} index={index} /></figure>)}</div>}
-      {kind === "about" && <div className="about-panel"><p>A small laboratory for turning ambiguous ideas into products people can see, touch and use.</p></div>}
+      {kind === "projects" && <div className="module-list">{projects.map((project, index) => { const copy = language === "zh" ? { ...project, ...zhContent[project.title] } : project; return <button className="module-list__item" key={project.title} onClick={() => onSelect({ ...project, image: `/tube/im${index + 1}.jpg`, linkLabel: ui[language].demo })}><span>0{index + 1}</span><strong>{copy.title}</strong><i>{copy.type}</i><b>↗</b></button>; })}</div>}
+      {kind === "skills" && <div className="module-grid module-grid--skills">{Array.from({ length: 10 }, (_, index) => <figure className="module-grid__item" key={index}><ModuleCell kind={kind} index={index} onSelect={onSelect} language={language} /></figure>)}</div>}
+      {kind === "about" && <div className="about-panel"><p>{ui[language].aboutText}</p></div>}
       {kind === "contact" && <div className="contact-links">{socialLinks.map((social) => <a className="contact-link" key={social.label} href={social.href} target={social.href.startsWith("http") ? "_blank" : undefined} rel={social.href.startsWith("http") ? "noreferrer" : undefined} aria-label={social.label}><span className="contact-link__icon"><svg viewBox="0 0 24 24" role="img" aria-hidden="true"><path d={social.icon} /></svg></span><span className={`contact-link__reveal${social.qr ? " is-qr" : ""}`}>{social.qr ? <img className={social.highContrast ? "qr-high-contrast" : undefined} src={social.qr} alt={`${social.label} QR code`} /> : social.detail}</span></a>)}</div>}
     </section>
   );
 }
 
 export default function Home() {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProject, setSelectedProject] = useState<DetailItem | null>(null);
+  const [language, setLanguage] = useState<Language>("en");
+  const copy = ui[language];
+  const displayedProject = selectedProject && language === "zh" && "demoUrl" in selectedProject ? { ...selectedProject, ...zhContent[selectedProject.title] } : selectedProject;
 
   useEffect(() => {
     const close = (event: KeyboardEvent) => { if (event.key === "Escape") setSelectedProject(null); };
@@ -324,41 +421,45 @@ export default function Home() {
       <header className="site-header">
         <button className="brand" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>MGLAB</button>
         <nav aria-label="Primary navigation">
-          <button onClick={() => go("works")}>Works</button>
-          <button onClick={() => go("projects")}>Projects</button>
-          <button onClick={() => go("skills")}>Skills</button>
-          <button onClick={() => go("about")}>About</button>
+          <button onClick={() => go("works")}>{copy.works}</button>
+          <button onClick={() => go("projects")}>{copy.projects}</button>
+          <button onClick={() => go("skills")}>{copy.skills}</button>
+          <button onClick={() => go("about")}>{copy.about}</button>
         </nav>
+        <button className="language-switch" onClick={() => setLanguage((current) => current === "en" ? "zh" : "en")} aria-label={language === "en" ? "切换为中文" : "Switch to English"}>{language === "en" ? "中文" : "EN"}</button>
       </header>
 
       <section className="hero" aria-label="MGLAB introduction">
         <div className="hero-background" aria-hidden="true" />
         <h1>MGLAB</h1>
         <div className="hero-canvas"><HeroScene /></div>
-        <p className="hero-line">Make Ideas Real</p>
-        <button className="scroll-cue" onClick={() => go("works")}><span>Explore</span><i /></button>
+        <p className="hero-line">{language === "en" ? "Make Ideas Real" : "让想法可实现"}</p>
+        <button className="scroll-cue" onClick={() => go("works")}><span>{copy.explore}</span><i /></button>
       </section>
 
-      <StaggeredGrid onSelect={setSelectedProject} />
-      <ShowcaseModule kind="projects" title="PROJECTS" id="projects" onSelect={setSelectedProject} />
-      <ShowcaseModule kind="skills" title="SKILLS" id="skills" onSelect={setSelectedProject} />
-      <ShowcaseModule kind="about" title="ABOUT" id="about" onSelect={setSelectedProject} />
-      <ShowcaseModule kind="contact" title="CONTACT" id="contact" onSelect={setSelectedProject} />
+      <StaggeredGrid onSelect={setSelectedProject} language={language} />
+      <ShowcaseModule kind="projects" title={copy.projects.toUpperCase()} id="projects" onSelect={setSelectedProject} language={language} />
+      <ShowcaseModule kind="skills" title={copy.skills.toUpperCase()} id="skills" onSelect={setSelectedProject} language={language} />
+      <ShowcaseModule kind="about" title={copy.about.toUpperCase()} id="about" onSelect={setSelectedProject} language={language} />
+      <ShowcaseModule kind="contact" title={copy.contact.toUpperCase()} id="contact" onSelect={setSelectedProject} language={language} />
 
-      {selectedProject && (
+      {displayedProject && (
         <div className="project-modal" role="dialog" aria-modal="true" aria-labelledby="project-title" onClick={() => setSelectedProject(null)}>
           <article onClick={(event) => event.stopPropagation()}>
             <button className="project-close" onClick={() => setSelectedProject(null)} aria-label="Close project details">×</button>
             <div className="project-media">
-              <div className="project-visual" style={{ backgroundImage: `url(/tube/im${projects.indexOf(selectedProject) + 1}.jpg)` }} role="img" aria-label={`${selectedProject.title} demo preview`} />
-              <span>Demo preview · Image / video</span>
+              <div className="project-visual" style={{ backgroundImage: `url(${displayedProject.image})` }} role="img" aria-label={`${displayedProject.title} preview`} />
+              <span>{copy.demoPreview}</span>
             </div>
             <div className="project-details">
-              <p>{selectedProject.type}</p>
-              <h2 id="project-title">{selectedProject.title}</h2>
-              <p>{selectedProject.summary}</p>
-              <dl><dt>Contribution</dt><dd>{selectedProject.contribution}</dd></dl>
-              {selectedProject.demoUrl ? <a className="demo-link" href={selectedProject.demoUrl} target="_blank" rel="noreferrer">Experience demo ↗</a> : <span className="demo-link is-disabled">Demo coming soon</span>}
+              <p>{displayedProject.type}</p>
+              <h2 id="project-title">{displayedProject.title}</h2>
+              <p>{displayedProject.summary}</p>
+              <dl><dt>{copy.contribution}</dt><dd>{displayedProject.contribution}</dd></dl>
+              <div className="project-links">
+                {"demoUrl" in displayedProject && (displayedProject.demoUrl ? <a className="demo-link" href={displayedProject.demoUrl} target="_blank" rel="noreferrer">{copy.demo}</a> : <span className="demo-link is-disabled">{copy.demoSoon}</span>)}
+                {displayedProject.githubUrl && <a className="demo-link" href={displayedProject.githubUrl} target="_blank" rel="noreferrer">{copy.github}</a>}
+              </div>
             </div>
           </article>
         </div>
